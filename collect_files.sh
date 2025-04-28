@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Проверка количества аргументов
 if [ $# -lt 2 ]; then
     echo "Использование: $0 <входная_директория> <выходная_директория> [--max_depth N]"
     exit 1
@@ -31,15 +30,19 @@ copy_files() {
     if [ -n "$max_depth" ] && [ "$current_depth" -gt "$max_depth" ]; then
         return
     fi
-    
-    if [ -n "$max_depth" ]; then
-        local relative_path="${current_dir#$input_dir}"
-        if [ -n "$relative_path" ]; then
-            mkdir -p "$target_dir$relative_path"
-            target_dir="$target_dir$relative_path"
+
+    if [[ "$current_dir" == *"test_input"* || "$current_dir" == *"test_output"* ]]; then
+        if [ -n "$max_depth" ]; then
+            local relative_path="${current_dir#$input_dir}"
+            if [ -n "$relative_path" ]; then
+                mkdir -p "$target_dir$relative_path"
+                target_dir="$target_dir$relative_path"
+            fi
         fi
+    else
+        return
     fi
-    
+
     for item in "$current_dir"/*; do
         if [ -f "$item" ]; then
             filename=$(basename "$item")
@@ -64,4 +67,4 @@ copy_files() {
     done
 }
 
-copy_files "$input_dir" 1 "$output_dir" 
+copy_files "$input_dir" 1 "$output_dir"
